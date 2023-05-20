@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild  } from '@angular/core';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 // import { Editor } from 'tinymce';
+
+import {TextProcessorService, EncodeResult, valueDef} from '../../_shared/shared.module'
 
 @Component({
   selector: 'app-document-designer',
@@ -7,6 +10,19 @@ import { Component } from '@angular/core';
   styleUrls: ['./document-designer.component.scss']
 })
 export class DocumentDesignerComponent {
+
+  modalRef?: BsModalRef;
+  @ViewChild('modalTemplate', { static: true }) previewModal!: TemplateRef<any>;
+
+  editorText:string = 'Hello #API:firstName:#! Today is #API:day:#. :math{3+5}: tomorrow is :math{#API:day:#+1}:';
+
+  encodedData!:EncodeResult;
+
+  val:valueDef = {
+      firstName:'John',
+      aday:10,
+      Bob:35
+    }
 
   private editor_plugins = [
     'advlist autolink lists link image charmap print anchor',
@@ -32,12 +48,31 @@ export class DocumentDesignerComponent {
           this.editorUpdateVariableText(editor, 'math');
         }
       });
+
+      editor.ui.registry.addButton('customFieldButton', {
+        text: 'Add Field',
+        onAction: (_:any) => {
+          // this.showModalCont(editor);
+          this.openPreviewModal(this.previewModal);
+          // editor.insertContent('&nbsp;<strong>It\'s my button!</strong>&nbsp;');
+        }
+      });
      
      }
   }
 
+  constructor(
+    private modalService: BsModalService,
+    private textProcessorService:TextProcessorService
+  ) {}
+
   editorUpdateVariableText(editor:any, type:any, value?:any) {
     editor.insertContent(`:${type}{${value || ''}}:`);
+  }
+
+  openPreviewModal(template: TemplateRef<any>) {
+    this.encodedData = this.textProcessorService.encode(this.editorText);
+    this.modalRef = this.modalService.show(template);
   }
 
 }

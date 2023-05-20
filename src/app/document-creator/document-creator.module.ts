@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { FormsModule } from '@angular/forms';
 
 import { DocumentListComponent } from './document-list/document-list.component';
 import { DocumentDesignerComponent } from './document-designer/document-designer.component';
@@ -19,7 +21,9 @@ import {SharedModule} from '../_shared/shared.module'
     CommonModule,
     DocumentCreatorRoutingModule,
     SharedModule,
-    EditorModule
+    EditorModule,
+    ModalModule.forRoot(),
+    FormsModule
   ],
   bootstrap: [DocumentListComponent]
 })

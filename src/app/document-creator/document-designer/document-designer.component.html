@@ -1,3 +1,15 @@
-<editor [init]="editor_init"></editor>
+<editor [init]="editor_init" [(ngModel)]="editorText" ></editor>
 
-<app-text-processor></app-text-processor>
+
+<ng-template #modalTemplate>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Modal</h4>
+      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <app-text-processor [metaData]="encodedData" [values]="val"></app-text-processor>
+    </div>
+  </ng-template>
+
