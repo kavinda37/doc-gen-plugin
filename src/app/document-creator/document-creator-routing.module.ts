@@ -5,12 +5,7 @@ import { DocumentDesignerComponent } from './document-designer/document-designer
 
 
 const routes: Routes = [
-
-  { path: '', 
-    component: DocumentDesignerComponent,
-
-  },
-
+  { path: '', component: DocumentDesignerComponent },
 ];
 
 @NgModule({

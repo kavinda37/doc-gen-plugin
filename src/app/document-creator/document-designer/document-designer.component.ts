@@ -10,36 +10,46 @@ import {TextProcessorService, EncodeResult, valueDef} from '../../_libraries';
   templateUrl: './document-designer.component.html',
   styleUrls: ['./document-designer.component.scss']
 })
+
 export class DocumentDesignerComponent {
 
-  modalRef?: BsModalRef;
+  modalRef!: BsModalRef;
   @ViewChild('modalTemplate', { static: true }) previewModal!: TemplateRef<any>;
+  @ViewChild('addFieldTemplate', { static: true }) addFieldTemplate!: TemplateRef<any>;
 
   editorText:string = 'Hello #API:firstName:#! Today is #API:day:#. :math{3+5}: tomorrow is :math{#API:day:#+1}:';
-
-  public encodedData$!:Observable<EncodeResult>;
-
+ 
+  customParam: { value: string, type: string } = {value: '', type: 'VAR'};
   val:valueDef = {}
+
   val$ = new BehaviorSubject<valueDef>(this.val)
+  encodedData$!:Observable<EncodeResult>;
+
+  
 
   private editor_plugins = [
     'advlist autolink lists link image charmap print anchor',
     'searchreplace visualblocks code fullscreen',
     'insertdatetime media table paste code help wordcount pagebreak'
   ];
-  private editor_toolbar = 'customNumericButton | customPreviewButton | undo redo | bold italic underline | fontselect fontsizeselect | backcolor forecolor | \
-    alignleft aligncenter alignright alignjustify | \
-    bullist numlist outdent indent | removeformat | image link table | help';
+  private editor_toolbar_default = 'undo redo | bold italic underline | fontselect fontsizeselect | backcolor forecolor | \
+    alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link table | help';
+  
+    private editor_toolbar_custom = 'customPreviewButton | customFieldButton customNumericButton';
 
 
   editor_init = {
     base_url: '/tinymce', 
     suffix: '.min',
-    height: 500,
+    height: 600,
+    skin: "oxide-dark",
+    content_css: "dark",
     menubar: 'file edit view insert format table',
      plugins: this.editor_plugins,
-     toolbar: this.editor_toolbar,
-     setup:(editor:any) => { // TODO tinymce types file incomplete, require version upgrade, using any for now
+     toolbar1: this.editor_toolbar_default,
+     toolbar2: this.editor_toolbar_custom,
+     // TODO tinymce 5 Editor types issue, require an alternative solution
+     setup:(editor:any) => { 
       editor.ui.registry.addButton('customNumericButton', {
         text: 'Calculation',
         onAction: (_:any) => {
@@ -48,9 +58,16 @@ export class DocumentDesignerComponent {
       });
 
       editor.ui.registry.addButton('customPreviewButton', {
-        text: 'Preview',
+        text: 'Evaluate',
         onAction: (_:any) => {
-          this.openPreviewModal(this.previewModal);
+          this.openPreviewModal();
+        }
+      });
+
+      editor.ui.registry.addButton('customFieldButton', {
+        text: 'Add Field',
+        onAction: (_:any) => {
+          this.openAddFieldModal(editor);
         }
       });
      
@@ -62,14 +79,30 @@ export class DocumentDesignerComponent {
     private textProcessorService:TextProcessorService
   ) {}
 
-  editorUpdateVariableText(editor:any, type:any, value?:any) {
+  editorUpdateVariableText(editor:any, type:string, value?:string) {
     editor.insertContent(`:${type}{${value || ''}}:`);
   }
 
-  openPreviewModal(template: TemplateRef<any>) {
+  openPreviewModal() {
     this.encodedData$ = of(this.textProcessorService.encode(this.editorText));
     this.val$.next(this.val)
-    this.modalRef = this.modalService.show(template);
+    this.modalRef = this.modalService.show(this.previewModal);
+  }
+
+  openAddFieldModal(editor: any): void {
+    const initialState = {
+      data: (value: string, type: string): void => {
+        editor.insertContent(`#${type || ''}:${value || ''}:#`);
+      }
+    };
+    this.modalRef = this.modalService.show(this.addFieldTemplate, {
+      initialState: initialState
+    });
+  }
+  
+  editorAddVar(type: string, value: string): void {
+    this.modalRef.hide();
+    (this.modalService.config.initialState as { data: (value: string, type: string) => void }).data(value, type);
   }
 
   refreshText(val:valueDef) {
