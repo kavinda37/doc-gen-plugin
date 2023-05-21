@@ -1,21 +1,62 @@
-<editor [init]="editor_init" [(ngModel)]="editorText" ></editor>
+<!-- 
+  --------------------------------------------------------------
+    Protype Designer to test the text precessor liberary code 
+  --------------------------------------------------------------
+  following imporvements are needed in future development
+  - Move #modalTemplate and #addFieldTemplate templates to seperate components 
+  - support API generated configurations for field section params
+  - Use tinyMce 6 or above once the source code editing capability is available
+  - more robust tester with proper error communication
+ 
+-->
 
+<!-- TinyMce Editor with 2way data binding -->
+<editor [init]="editor_init" [(ngModel)]="editorText"></editor>
 
-<ng-template #modalTemplate>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">Preview and Tester</h4>
-    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <ng-container *ngIf="(encodedData$ | async)?.meta as metaArray">
-      <div *ngFor="let meta of metaArray" class="mb-3">
-        <label [for]="meta.key" class="form-label">{{meta.key}}</label>
-        <input type="text" class="form-control" [id]="meta.key" [(ngModel)]="val[meta.key!]" (ngModelChange)="refreshText(val)">
-      </div>
-    </ng-container>
-    <app-text-processor [encodeResult$]="encodedData$" [values$]="val$"></app-text-processor>
-  </div>
+<!-- Modal templates -->
+<ng-template #previewTemplate>
+  <form [formGroup]="modalForm">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Preview and Tester</h4>
+      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ng-container *ngIf="(encodedData$ | async)?.meta as metaArray">
+        <div *ngFor="let meta of metaArray" class="mb-3">
+          <label [for]="meta.key" class="form-label">{{meta.key}}</label>
+          <input type="text" class="form-control" [id]="meta.key" [formControlName]="meta.key!" (ngModelChange)="refreshText()">
+        </div>
+      </ng-container>
+      <app-text-processor [encodeResult$]="encodedData$" [values$]="val$"></app-text-processor>
+    </div>
+  </form>
 </ng-template>
 
+<ng-template #addFieldTemplate>
+  <form [formGroup]="addFieldForm">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Add Field</h4>
+      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-3">
+        <select class="form-select" formControlName="type">
+          <option value="VAR">VAR</option>
+          <option value="API">API</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="fieldName" class="form-label">Param Name</label>
+        <input type="text" class="form-control" id="#fieldName" formControlName="value">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="editorAddVar()">Add</button>
+      <button type="button" class="btn btn-default" (click)="modalRef.hide()">Close</button>
+    </div>
+  </form>
+</ng-template>

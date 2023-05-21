@@ -8,7 +8,7 @@ export class StringResolverService {
   constructor() { }
 
   resolve(formula: string, data: object= {}): string {
-    if (data !== undefined && Object.entries(data).length === 0 && data.constructor === Object) {
+    if (data !== undefined && Object.keys(data).length === 0) {
       console.warn('String data resolver failure: Cannot bind values. Empty data object provided.');
     }
   
@@ -29,7 +29,7 @@ export class StringResolverService {
     }
     
   
-    if (error) throw new Error('String data resolver failure: Variables must have a value');
+    if (error) console.warn('String data resolver failure: Variables must have a value');
     return formulaHash;
   }
 }
