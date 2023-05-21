@@ -2,7 +2,7 @@ import { Component, TemplateRef, ViewChild  } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 // import { Editor } from 'tinymce';
 
-import {TextProcessorService, EncodeResult, valueDef} from '../../_shared/shared.module'
+import {TextProcessorService, EncodeResult, valueDef} from '../../_libraries';
 
 @Component({
   selector: 'app-document-designer',

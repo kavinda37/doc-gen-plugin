@@ -9,7 +9,7 @@ import { DocumentDesignerComponent } from './document-designer/document-designer
 
 import { DocumentCreatorRoutingModule } from './document-creator-routing.module'
 
-import {SharedModule} from '../_shared/shared.module'
+import {TextProcessorModule} from '../_libraries'
 
 
 @NgModule({
@@ -20,7 +20,7 @@ import {SharedModule} from '../_shared/shared.module'
   imports: [
     CommonModule,
     DocumentCreatorRoutingModule,
-    SharedModule,
+    TextProcessorModule,
     EditorModule,
     ModalModule.forRoot(),
     FormsModule

@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TextProcessorComponent } from './text-processor/text-processor.component';
 
-export * from './text-processor/text-processor.service';
+import { TextProcessorComponent } from './text-processor.component';
 
+export * from './text-processor.service';
 
 @NgModule({
   declarations: [
@@ -16,4 +16,4 @@ export * from './text-processor/text-processor.service';
     TextProcessorComponent
   ]
 })
-export class SharedModule { }
+export class TextProcessorModule { }
