@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { TextProcessorService, EncodeResult, valueDef } from './text-processor.service'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -12,10 +14,10 @@ import * as DOMPurify from 'dompurify'
 })
 export class TextProcessorComponent {
 
-  @Input() public metaData!: EncodeResult;
-  @Input() public values!: valueDef;
+  @Input() public encodeResult$!: Observable<EncodeResult>;
+  @Input() public values$!: Observable<valueDef>;
 
-  protected outputString!: string | SafeHtml;
+  protected outputString$!: Observable<string | SafeHtml>;
 
   constructor(
     public resolverService:TextProcessorService,
@@ -23,36 +25,30 @@ export class TextProcessorComponent {
   ) {}
 
   ngOnInit() {
-    if(this.metaData && this.values) this.outputString = this.runExecutor(this.metaData, this.values);
-    console.log('this.metaData, this.values', this.metaData, this.values)
-    const data = {
-      firstName:'John',
-      day:10,
-      Bob:35
-    }
-    
-    // this.outputString = this.runExecutor(this.metaData, this.values);
+    if(this.encodeResult$ && this.values$) this.outputString$ = this.runExecutor(this.encodeResult$, this.values$);
   }
 
-  /**-------------------
+  /**------------------
   *     WARNING
   * -------------------
   * If Inline styles are present require to bypass angular inbuilt security since angular dom sanitizer removes inline styles
   * Clean up html before disabeling inbuilt angular sanitizer to prevent XSS
-  * since angular is not letting to bypass inline styles only, its require to use more flexible dom sanitizer hence using famous nodejs DOMPurify lib
+  * since angular is not letting to bypass inline styles only, its require to use more flexible dom sanitizer hence using DOMPurify lib
   * need to Add more safty by restricting allowed styles in future
   */
-  runExecutor(metaData:EncodeResult, values:valueDef): string | SafeHtml{
-    const htmlString:string = this.resolverService.executor(metaData, values)
-    let outputString: string | SafeHtml = htmlString;
+  runExecutor(encodeResult$: Observable<EncodeResult>, values$: Observable<valueDef>): Observable<string | SafeHtml> {
+    return this.resolverService.executor(encodeResult$, values$).pipe(
+      switchMap((htmlString) => {
+        const inlineStylePattern: RegExp = /<[^>]+style="[^"]+"[^>]*>/g;
+        const hasInlineStyle: boolean = inlineStylePattern.test(htmlString);
     
-    const inlineStylePattern:RegExp = /<[^>]+style="[^"]+"[^>]*>/g;
-    const hasInlineStyle:boolean = inlineStylePattern.test(htmlString);
-
-    if (hasInlineStyle) {
-      const cleanHtml:string = DOMPurify.sanitize(htmlString, { ALLOWED_ATTR: ['style'] });
-      outputString = this.sanitizer.bypassSecurityTrustHtml(cleanHtml);
-    }
-    return outputString;
+        if (hasInlineStyle) {
+          const cleanHtml: string = DOMPurify.sanitize(htmlString, { ALLOWED_ATTR: ['style'] });
+          return of(this.sanitizer.bypassSecurityTrustHtml(cleanHtml));
+        }
+    
+        return of(htmlString);
+      })
+    );
   }
 }

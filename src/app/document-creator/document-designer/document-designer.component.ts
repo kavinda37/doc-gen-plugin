@@ -1,5 +1,6 @@
 import { Component, TemplateRef, ViewChild  } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { Observable, of } from 'rxjs';
 // import { Editor } from 'tinymce';
 
 import {TextProcessorService, EncodeResult, valueDef} from '../../_libraries';
@@ -16,13 +17,15 @@ export class DocumentDesignerComponent {
 
   editorText:string = 'Hello #API:firstName:#! Today is #API:day:#. :math{3+5}: tomorrow is :math{#API:day:#+1}:';
 
-  encodedData!:EncodeResult;
+  encodedData$!:Observable<EncodeResult>;
 
   val:valueDef = {
       firstName:'John',
       aday:10,
       Bob:35
     }
+
+  val$ = of(this.val)
 
   private editor_plugins = [
     'advlist autolink lists link image charmap print anchor',
@@ -50,7 +53,7 @@ export class DocumentDesignerComponent {
       });
 
       editor.ui.registry.addButton('customFieldButton', {
-        text: 'Add Field',
+        text: 'Preview',
         onAction: (_:any) => {
           // this.showModalCont(editor);
           this.openPreviewModal(this.previewModal);
@@ -71,7 +74,7 @@ export class DocumentDesignerComponent {
   }
 
   openPreviewModal(template: TemplateRef<any>) {
-    this.encodedData = this.textProcessorService.encode(this.editorText);
+    this.encodedData$ = of(this.textProcessorService.encode(this.editorText));
     this.modalRef = this.modalService.show(template);
   }
 
