@@ -32,9 +32,10 @@ export class TextProcessorService {
         }
       });
     }
-  
+
     if (fields) {
-      fields.forEach((item) => {
+      const noneDuplicates = [...new Set(fields)];
+      noneDuplicates.forEach((item) => {
         const [type, key] = item.slice(1, -2).split(':').map((part) => part.trim());
         const hash = this.createHash();
         formulaHash = formulaHash.split(item).join(hash);

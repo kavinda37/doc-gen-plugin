@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, SimpleChanges } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -24,7 +24,7 @@ export class TextProcessorComponent {
     public sanitizer: DomSanitizer
   ) {}
 
-  ngOnInit() {
+  ngOnChanges(change: SimpleChanges) {
     if(this.encodeResult$ && this.values$) this.outputString$ = this.runExecutor(this.encodeResult$, this.values$);
   }
 
