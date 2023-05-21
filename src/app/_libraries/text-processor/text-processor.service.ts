@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 
 import { StringResolverService } from './services/string-resolver.service';
 import { MathResolverService } from './services/math-resolver.service';
@@ -14,14 +16,14 @@ export class TextProcessorService {
     private mathResolverService:MathResolverService,
   ) { }
 
-  public encode(formula: string, values?: EncodeOptionalValues): EncodeResult {
+  public encode(text: string, values?: EncodeOptionalValues): EncodeResult {
     const valueObject: Record<string, any> = {};
     const dataObject: Array<metaData> = [];
-    let formulaHash: string = formula;
-
+    let formulaHash: string = text;
+  
     const regex: RegExp = /\#[A-Z]+:.*?\:#/g;
-    const fields: RegExpMatchArray | null = formula.match(regex);
-
+    const fields: RegExpMatchArray | null = text.match(regex);
+  
     if (values?.data) {
       values.data.forEach((item: { [key: string]: any }) => {
         const key = values.key ?? 'name';
@@ -32,40 +34,43 @@ export class TextProcessorService {
     }
 
     if (fields) {
-      fields.forEach((item) => {
-        if (formulaHash.includes(item)) {
-          const [type, key] = item.slice(1, -2).split(':').map((part) => part.trim());
-          const hash = this.createHash();
-          formulaHash = formulaHash.split(item).join(hash);
-          dataObject.push({ hash, identifier: item, type, key, ...valueObject[key] });
-        }
+      const noneDuplicates = [...new Set(fields)];
+      noneDuplicates.forEach((item) => {
+        const [type, key] = item.slice(1, -2).split(':').map((part) => part.trim());
+        const hash = this.createHash();
+        formulaHash = formulaHash.split(item).join(hash);
+        dataObject.push({ hash, identifier: item, type, key, ...valueObject[key] });
       });
     } 
-    
+  
     return {
-      formula: { hashed: formulaHash, readable: formula },
+      formula: { hashed: formulaHash, readable: text },
       meta: dataObject
     };
   }
 
-  public executor(result: EncodeResult, values: valueDef, config?: ExecutorConfig): string {
-    const hashedValues = this.bind(result, values);
 
-    let formulaHash:string = result.formula.hashed;
-    let options = config ?? {};
-
-    try {
-      formulaHash = this.mathResolverService.resolve(formulaHash, hashedValues); // Level 1
-      formulaHash = this.stringResolverService.resolve(formulaHash, hashedValues); // Level 0 
-    } catch (e) {
-      console.warn('Expression Evaluator Service', e, formulaHash, hashedValues, config);
-      return options.errorMessage || 'N/A';
-    }
-
-    return formulaHash;
+  public executor(result: Observable<EncodeResult>, values: Observable<valueDef>, config: ExecutorConfig = {}): Observable<string> {
+    return result.pipe(
+      switchMap((result) => values.pipe(
+        switchMap((values) => {
+          const hashedValues = this.bind(result, values);
+          let formulaHash = result.formula.hashed;
+  
+          formulaHash = this.mathResolverService.resolve(formulaHash, hashedValues); // Level 1
+          formulaHash = this.stringResolverService.resolve(formulaHash, hashedValues); // Level 0
+  
+          return of(formulaHash);
+        }),
+        catchError((error) => {
+          console.warn('Expression Evaluator Service', error);
+          return of(config.errorMessage || 'N/A');
+        })
+      ))
+    );
   }
 
-  private bind(result: EncodeResult, values: valueDef, key: string = 'key'): valueDef {
+  public bind(result: EncodeResult, values: valueDef, key: string = 'key'): valueDef {
     const meta: Array<metaData> = result?.meta;
     if (!meta) { return {}; }
     key = key ? key : 'key';
@@ -75,9 +80,7 @@ export class TextProcessorService {
     meta.forEach((item: { [key: string]: any }) => {
       metaObjectMap[item['hash']] = values && values[item[key]]  ? values[item[key]] : '';
     });
-
-    console.log('metaObjectMap', metaObjectMap)
-
+    
     return metaObjectMap;
   }
 
@@ -113,6 +116,7 @@ export interface metaData {
   identifier:string; 
   type?:string;
   key?:string;
+  name?:string
 }
 
 export type valueDef =  Record<string, string | number | object | Array<object>>

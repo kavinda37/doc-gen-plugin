@@ -20,7 +20,8 @@ export class MathResolverService {
     try {
       return math.evaluate(processedFormula);
     } catch (e) {
-      throw new Error('Math Resolver ' + e);
+      console.error('Math Resolver ' + e)
+      return processedFormula;
     }
   }
   

@@ -2,14 +2,20 @@
 
 
 <ng-template #modalTemplate>
-    <div class="modal-header">
-      <h4 class="modal-title pull-left">Modal</h4>
-      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
-        <span aria-hidden="true" class="visually-hidden">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-        <app-text-processor [metaData]="encodedData" [values]="val"></app-text-processor>
-    </div>
-  </ng-template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Preview and Tester</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <ng-container *ngIf="(encodedData$ | async)?.meta as metaArray">
+      <div *ngFor="let meta of metaArray" class="mb-3">
+        <label [for]="meta.key" class="form-label">{{meta.key}}</label>
+        <input type="text" class="form-control" [id]="meta.key" [(ngModel)]="val[meta.key!]" (ngModelChange)="refreshText(val)">
+      </div>
+    </ng-container>
+    <app-text-processor [encodeResult$]="encodedData$" [values$]="val$"></app-text-processor>
+  </div>
+</ng-template>
 

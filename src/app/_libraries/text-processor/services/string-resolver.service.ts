@@ -17,7 +17,7 @@ export class StringResolverService {
   
     if (data) {
       Object.entries(data).some(([key, value]) => {
-        let val: any = value;
+        let val = value;
   
         if (isNaN(val) && !val) {
           error = true;
