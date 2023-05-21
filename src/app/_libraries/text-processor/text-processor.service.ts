@@ -18,7 +18,7 @@ export class TextProcessorService {
 
   public encode(text: string, values?: EncodeOptionalValues): EncodeResult {
     const valueObject: Record<string, any> = {};
-    const dataObject: Array<metaData> = [];
+    const dataObject: Array<MetaData> = [];
     let formulaHash: string = text;
   
     const regex: RegExp = /\#[A-Z]+:.*?\:#/g;
@@ -71,7 +71,7 @@ export class TextProcessorService {
   }
 
   public bind(result: EncodeResult, values: valueDef, key: string = 'key'): valueDef {
-    const meta: Array<metaData> = result?.meta;
+    const meta: Array<MetaData> = result?.meta;
     if (!meta) { return {}; }
     key = key ? key : 'key';
 
@@ -98,7 +98,7 @@ export interface EncodeOptionalValues {
 
 export interface EncodeResult {
   formula: { hashed: string; readable: string };
-  meta: Array<metaData>;
+  meta: Array<MetaData>;
 }
 
 export interface ExecutorConfig {
@@ -111,7 +111,7 @@ export interface ExecutorConfig {
   metaData?: any;
 }
 
-export interface metaData {
+export interface MetaData {
   hash: string;
   identifier:string; 
   type?:string;

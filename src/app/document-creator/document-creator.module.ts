@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EditorModule } from '@tinymce/tinymce-angular';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { DocumentListComponent } from './document-list/document-list.component';
 import { DocumentDesignerComponent } from './document-designer/document-designer.component';
@@ -23,7 +23,8 @@ import {TextProcessorModule} from '../_libraries'
     TextProcessorModule,
     EditorModule,
     ModalModule.forRoot(),
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   bootstrap: [DocumentListComponent]
 })
