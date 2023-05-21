@@ -1,7 +1,7 @@
 import { Component, TemplateRef, ViewChild  } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-// import { Editor } from 'tinymce';
+// import { Editor } from 'tinymce'; 
 
 import {TextProcessorService, EncodeResult, valueDef} from '../../_libraries';
 
@@ -39,7 +39,7 @@ export class DocumentDesignerComponent {
     menubar: 'file edit view insert format table',
      plugins: this.editor_plugins,
      toolbar: this.editor_toolbar,
-     setup:(editor:any) => { 
+     setup:(editor:any) => { // TODO tinymce types file incomplete, require version upgrade, using any for now
       editor.ui.registry.addButton('customNumericButton', {
         text: 'Calculation',
         onAction: (_:any) => {
