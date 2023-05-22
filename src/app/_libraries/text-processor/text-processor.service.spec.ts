@@ -1,6 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
-// import { TextProcessorService } from './text-processor.service';
 import { TextProcessorService, EncodeOptionalValues, EncodeResult, valueDef } from './text-processor.service';
 
 describe('TextProcessorService', () => {
@@ -39,7 +37,7 @@ describe('TextProcessorService', () => {
   });
 
   it('should handle missing values correctly', () => {
-    const text = '#TYPE: Key1: #';
+    const text = 'NO PARAMS TEXT';
 
     const result = service.encode(text);
 
@@ -50,7 +48,7 @@ describe('TextProcessorService', () => {
 
   it('should bind values correctly', () => {
     const result: EncodeResult = {
-      formula: { hashed: '#TYPE:Key1:#', readable: '#TYPE:Key1:#' },
+      formula: { hashed: '_abc123', readable: '#TYPE:Key1:#' },
       meta: [
         { hash: '_abc123', identifier: '#TYPE:Key1:#', type: 'TYPE', key: 'Key1' },
         { hash: '_def456', identifier: '#TYPE:Key2:#', type: 'TYPE', key: 'Key2' },
@@ -70,7 +68,7 @@ describe('TextProcessorService', () => {
 
   it('should handle missing values correctly', () => {
     const result: EncodeResult = {
-      formula: { hashed: '#TYPE: Key1: #', readable: '#TYPE: Key1: #' },
+      formula: { hashed: '_abc123 _def456', readable: '#TYPE:Key1:# #TYPE:Key2:#' },
       meta: [
         { hash: '_abc123', identifier: '#TYPE:Key1:#', type: 'TYPE', key: 'Key1' },
         { hash: '_def456', identifier: '#TYPE:Key2:#', type: 'TYPE', key: 'Key2' },
@@ -85,7 +83,7 @@ describe('TextProcessorService', () => {
 
   it('should use default key if not provided', () => {
     const result: EncodeResult = {
-      formula: { hashed: '#TYPE: Key1: #', readable: '#TYPE: Key1: #' },
+      formula: { hashed: '_abc123 _def456', readable: '#TYPE:Key1:# #TYPE:Key2:#' },
       meta: [
         { hash: '_abc123', identifier: '#TYPE:Key1:#', type: 'TYPE', key: 'Key1' },
         { hash: '_def456', identifier: '#TYPE:Key2:#', type: 'TYPE', key: 'Key2' },
