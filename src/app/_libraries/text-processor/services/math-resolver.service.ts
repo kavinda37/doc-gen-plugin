@@ -10,7 +10,7 @@ export class MathResolverService {
 
   constructor(private stringResolverService:StringResolverService) { }
   
-  protected evaluateMath(formula: string, data?: object): any {
+  evaluateMath(formula: string, data?: object): any {
     if (!formula) {
       return null;
     }
