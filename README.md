@@ -1,4 +1,13 @@
-# DocGenPlugin
+# Document Generator Plugin
+
+This is a simple text processor plugin to create documents, invoices, bills and emails etc. this liberary will resolve params and inject data inside strings/html on runtime
+
+*This project is in pre-alpha stages
+
+# Features (Current version)
+- String resolver service (`#:TYPE:value:#`) - This is a base of text prosessor liberary which will inject params with resolved data.
+- Math resolver service (`:math{}:`) - this will support all the arithmatic functions which is defined inside the notation (eg: `:math{2+3}:` will resolve 5 ) 
+
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.6.
 
