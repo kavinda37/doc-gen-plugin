@@ -19,7 +19,8 @@ export class DocumentDesignerComponent {
   @ViewChild('addFieldTemplate', { static: true }) addFieldTemplate!: TemplateRef<any>;
 
   // dummy text string for testing
-  editorText: string = 'Hello #API:firstName:#! Today is #API:day:#. :math{3+5}: tomorrow is :math{#API:day:#+1}:';
+  // 'Hello #API:firstName:#! Today is #API:day:#. :math{3+5}: tomorrow is :math{#API:day:#+1}:'
+  editorText: string = '';
 
   val: valueDef = {}
   val$ = new BehaviorSubject<valueDef>(this.val)
