@@ -1,9 +1,10 @@
 import { Component, Input, Output, SimpleChanges } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-
-import { TextProcessorService, EncodeResult, valueDef } from './text-processor.service'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
+import { TextProcessorService } from './text-processor.service'
+import { EncodeResult, valueDef } from './interfaces/text-processor';
 
 import * as DOMPurify from 'dompurify'
 

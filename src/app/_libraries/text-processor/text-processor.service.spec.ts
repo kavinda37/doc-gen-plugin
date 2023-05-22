@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { TextProcessorService, EncodeOptionalValues, EncodeResult, valueDef } from './text-processor.service';
+import { TextProcessorService } from './text-processor.service';
+import { EncodeOptionalValues, EncodeResult, valueDef } from './interfaces/text-processor';
 
 describe('TextProcessorService', () => {
   let service: TextProcessorService;
