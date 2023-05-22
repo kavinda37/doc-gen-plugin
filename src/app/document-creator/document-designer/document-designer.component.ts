@@ -18,6 +18,7 @@ export class DocumentDesignerComponent {
   @ViewChild('previewTemplate', { static: true }) previewModal!: TemplateRef<any>;
   @ViewChild('addFieldTemplate', { static: true }) addFieldTemplate!: TemplateRef<any>;
 
+  // dummy text string for testing
   editorText: string = 'Hello #API:firstName:#! Today is #API:day:#. :math{3+5}: tomorrow is :math{#API:day:#+1}:';
 
   val: valueDef = {}
